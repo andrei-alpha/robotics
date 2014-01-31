@@ -8,6 +8,9 @@ from BrickPi import *   #import BrickPi.py file to use BrickPi operations
 
 m1 = PORT_A
 m2 = PORT_B
+encToCm = 53.03 # 42
+encToDeg = 6.88 # 6.05
+difRot = 5.6 # 5.6
 BrickPiSetup()  # setup the serial port for communication
 
 BrickPiSetupSensors()   #Send the properties of sensors to BrickPi
@@ -28,6 +31,7 @@ def enc(m):
   return BrickPi.Encoder[m]
 
 def calibrate(sa, sb, dif, step=5):
+  dif = int(dif)
   ga = 1 if sa > 0 else -1
   gb = 1 if sb > 0 else -1
   sa = max(sa, -sa)
@@ -37,15 +41,18 @@ def calibrate(sa, sb, dif, step=5):
   if dif > 0:
     ex = min(250 - sb, step)
     sb += ex
-    sa = max(50, sa - step + ex)
+    sa = max(30, sa - step + ex)
   elif dif < 0:
     ex = min(250 - sa, step)
     sa += ex
-    sb = max(50, sb - step + ex)
+    sb = max(30, sb - step + ex)
   return [sa * ga, sb * gb]
 
-def dist(enc0, enc1):
+def distMod(enc0, enc1):
   return enc1 - enc0 if enc0 < enc1 else enc0 - enc1
+
+def mod(x):
+  return x if x > 0 else -x
 
 def move(cm, speed):
   enableMotor(m1)
@@ -62,11 +69,11 @@ def move(cm, speed):
   speed2 = speed
   cnt = 0
 
-  while cnt / 42 < cm:
+  while cnt / encToCm < cm:
     setSpeed(m1, speed1)
     setSpeed(m2, speed2)
     update()
-    cnt += (dist(a, enc(m1)) +  dist(b, enc(m2))) / 2.0
+    cnt += (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
     a = enc(m1)
     b = enc(m2)
     dif = a - b
@@ -75,11 +82,14 @@ def move(cm, speed):
     speed1 = spds[0]
     speed2 = spds[1]
 
-    #print dif - normal, speed1, speed2
-  
-    time.sleep(.1)
+    print dif - normal, speed1, speed2, '#', cnt
+ 
+  setSpeed(m1, 0)
+  setSpeed(m2, 0)
+  update()
+  return cnt / encToCm - cm
 
-def rotate(deg):
+def rotate(deg, speed):
   enableMotor(m1)
   enableMotor(m2)
   setSpeed(m1, 0)
@@ -90,43 +100,33 @@ def rotate(deg):
   b = enc(m2)
 
   normal = a - b
-  inispeed1 = -250 if deg > 0 else 250
-  inispeed2 = 250 if deg > 0 else -250
+  step = -difRot if deg > 0 else difRot
+  inispeed1 = -speed if deg > 0 else speed
+  inispeed2 = speed if deg > 0 else -speed
+  deg = mod(deg)
   speed1 = inispeed1
   speed2 = inispeed2
   cnt = 0
 
-  while cnt / 6.5 < deg:
+  while cnt / encToDeg < deg:
     setSpeed(m1, speed1)
     setSpeed(m2, speed2)
     update()
-    cnt += (dist(a, enc(m1)) +  dist(b, enc(m2))) / 2.0
+    cnt += (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
     a = enc(m1)
     b = enc(m2)
     dif = a - b
-     
+
+    # Expected increase
+    #normal += step
     #spds = calibrate(inispeed1, inispeed2, dif - normal)
     #speed1 = spds[0]
     #speed2 = spds[1]
   
-    #print dif - normal, speed1, speed2
+    #print normal, dif, speed1, speed2
  
-    time.sleep(.1)
+  setSpeed(m1, 0)
+  setSpeed(m2, 0)
+  update()
+  return cnt / encToDeg - deg
 
-"""
-while True:
-    print "Spin right"
-    BrickPi.MotorSpeed[PORT_A] = 200  #Set the speed of MotorA (-255 to 255)
-    BrickPi.MotorSpeed[PORT_B] = -200  #Set the speed of MotorB (-255 to 255)
-    ot = time.time()
-    while(time.time() - ot < 20):    #running while loop for 3 seconds
-        BrickPiUpdateValues()       # Ask BrickPi to update values for sensors/motors
-        time.sleep(.1)              # sleep for 100 ms
-    print "Spin left"
-    BrickPi.MotorSpeed[PORT_A] = -200  #Set the speed of MotorA (-255 to 255)
-    BrickPi.MotorSpeed[PORT_B] = 200  #Set the speed of MotorB (-255 to 255)
-    ot = time.time()
-    while(time.time() - ot < 20):    #running while loop for 3 seconds
-        BrickPiUpdateValues()       # Ask BrickPi to update values for sensors/motors
-        time.sleep(.1)              # sleep for 100 ms
-"""
