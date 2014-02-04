@@ -54,7 +54,7 @@ def distMod(enc0, enc1):
 def mod(x):
   return x if x > 0 else -x
 
-def move(cm, speed):
+def move(cm, speed, obstacle=False):
   enableMotor(m1)
   enableMotor(m2)
   setSpeed(m1, 0)
@@ -67,13 +67,31 @@ def move(cm, speed):
   normal = a - b
   speed1 = speed
   speed2 = speed
+  ind = 0
   cnt = 0
-
+  sumLastEnc = 0.0
+  
   while cnt / encToCm < cm:
+    ind += 1
     setSpeed(m1, speed1)
     setSpeed(m2, speed2)
     update()
-    cnt += (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
+    
+    # get new encoder values
+
+    stepEnc = (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
+    sumLastEnc += stepEnc
+    cnt += stepEnc
+
+    # Try to guess if something is going wrong
+    if obstacle == True and ind % 10 == 0:
+      meanEnc = sumLastEnc / 10.0
+      sumLastEnc = 0.0
+      print meanEnc, cnt / ind, stepEnc
+      if meanEnc < (cnt / ind) * 0.8:
+        return -1
+
+    # Replace old encoder values
     a = enc(m1)
     b = enc(m2)
     dif = a - b
@@ -82,7 +100,7 @@ def move(cm, speed):
     speed1 = spds[0]
     speed2 = spds[1]
 
-    print dif - normal, speed1, speed2, '#', cnt
+    #print dif - normal, speed1, speed2, '#', stepEnc
  
   setSpeed(m1, 0)
   setSpeed(m2, 0)

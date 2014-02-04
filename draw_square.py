@@ -1,11 +1,11 @@
 from utils import *
-speed = 150
+speed = 170
 dist = 40
 
-move(40, speed)
+move(dist, speed)
 rotate(90, speed)
-move(40, speed)
+move(dist, speed)
 rotate(90, speed)
-move(40, speed)
+move(dist, speed)
 rotate(90, speed)
-move(40, speed)
+move(dist, speed)
