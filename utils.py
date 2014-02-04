@@ -12,8 +12,11 @@ encToCm = 53.03 # 42
 encToDeg = 6.88 # 6.05
 difRot = 5.6 # 5.6
 BrickPiSetup()  # setup the serial port for communication
-
 BrickPiSetupSensors()   #Send the properties of sensors to BrickPi
+
+def enableSensor(s, stype):
+  BrickPi.SensorType[s] = stype
+  BrickPiSetupSensors()
 
 def enableMotor(m):
   BrickPi.MotorEnable[m] = 1
@@ -30,12 +33,17 @@ def update():
 def enc(m):
   return BrickPi.Encoder[m]
 
+def sensor(s):
+  return BrickPi.Sensor[s]
+
 def calibrate(sa, sb, dif, step=5):
   dif = int(dif)
   ga = 1 if sa > 0 else -1
   gb = 1 if sb > 0 else -1
-  sa = max(sa, -sa)
-  sb = max(sb, -sb)
+  if sa < 0 and sb < 0:
+    dif *= -1
+  sa = mod(sa)
+  sb = mod(sb)
   step = max(dif / 5, -dif / 5)
 
   if dif > 0:
