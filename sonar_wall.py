@@ -1,17 +1,28 @@
 from utils import *
 
-# Put the sensor on the rigth side
-# 0 for rigth, 1 for left
-side = 0
+# Put the sensor on the right side
+# 0 for right, 1 for left
+side = 1
+mag = 15
 print 'The sensor needs to be placed on the', 'left' if side else 'right', 'side!'
 
-speed = 200
+speed = 140
 
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 
-def most_common(lst):
-    return max(set(lst), key=lst.count)
+def calib(speed, dif):
+  mdif = mod(dif)
+  sa = speed
+  sb = speed  
+
+  if dif > 0:
+    sa -= mag * mdif
+    sb += mag * mdif
+  elif dif < 0:
+    sa += mag * mdif
+    sb -= mag * mdif
+  return [ int(sa), int(sb)]
 
 def keep_wall():
   enableMotor(m1)
@@ -27,14 +38,17 @@ def keep_wall():
     vals.append( sensor(s3) )
   
   # read initial value
-  normal = most_common(vals)   
+  normal = median(vals)   
+  lastDif = normal
+  changeTime = 0
 
   while True:
+    changeTime += 1
     # We don't want update to move motors
 
     # read 5 times sonar sensor
     vals = []
-    for i in xrange(0, 6):
+    for i in xrange(0, 5):
       update()
       vals.append( sensor(s3) )
     
@@ -42,7 +56,11 @@ def keep_wall():
     # this way we discard spike values
     dif = most_common(vals)
     
-    spds = calibrate(speed, speed, (dif - normal) * 56)
+    if dif is 0 or mod(dif) < mod(lastDif) or changeTime < 20:
+      spds = [speed, speed]
+    else:
+      changeTime = 0
+      spds = calib(speed, dif - normal)
     print 'spds', spds, 'dif', dif - normal  
 
     # move with the desired calibrated speed
@@ -53,5 +71,6 @@ def keep_wall():
       setSpeed(m1, spds[1])
       setSpeed(m2, spds[0])    
     update()
+    lastDif = dif
 
 keep_wall()

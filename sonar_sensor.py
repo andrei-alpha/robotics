@@ -3,10 +3,7 @@ from utils import *
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 
-rangev = [150, 250]
-
-def most_common(lst):
-    return max(set(lst), key=lst.count)
+rangev = [30, 250]
 
 def keep_distance(desired, slowStep = 15):
   enableMotor(m1)
@@ -29,7 +26,10 @@ def keep_distance(desired, slowStep = 15):
     
     # get the most common out of the last 5 readings
     # this way we discard spike values
-    val_sonar = most_common(vals)
+    #val_sonar = most_common(vals)
+  
+    # get the median value of the last 5 readings
+    val_sonar = median(vals)
     vals = []
     err = val_sonar - desired
     
@@ -46,7 +46,7 @@ def keep_distance(desired, slowStep = 15):
     b = enc(m2)
     dif = a - b
   
-    #print 'err', err, 'speed', speed, 'dif', dif-normal   
+    print 'err', err, 'speed', speed, 'dif', dif-normal   
 
     spds = calibrate(speed, speed, dif - normal)
     #print 'spds', spds  

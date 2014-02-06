@@ -62,6 +62,16 @@ def distMod(enc0, enc1):
 def mod(x):
   return x if x > 0 else -x
 
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
+def median(lst):
+  lst.sort()
+  length = len(lst)
+  if length % 2:
+    return lst[length / 2 + 1]
+  return lst[length / 2] * 0.5 + lst[length / 2 + 1] * 0.5
+
 def move(cm, speed, obstacle=False):
   enableMotor(m1)
   enableMotor(m2)
