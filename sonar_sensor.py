@@ -46,10 +46,10 @@ def keep_distance(desired, slowStep = 15):
     b = enc(m2)
     dif = a - b
   
-    print 'err', err, 'speed', speed, 'dif', dif-normal   
+    #print 'err', err, 'speed', speed, 'dif', dif-normal   
 
     spds = calibrate(speed, speed, dif - normal)
-    print 'spds', spds  
+    #print 'spds', spds  
   
     # move with the desired calibrated speed
     setSpeed(m1, spds[0])
