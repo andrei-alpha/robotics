@@ -2,7 +2,7 @@ from utils import *
 
 # Put the sensor on the right side
 # 0 for right, 1 for left
-side = 0
+side = 1
 mag = 15
 print 'The sensor needs to be placed on the', 'left' if side else 'right', 'side!'
 

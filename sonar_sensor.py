@@ -1,4 +1,5 @@
 from utils import *
+import random, os
 
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
@@ -55,6 +56,9 @@ def keep_distance(desired, slowStep = 15):
     setSpeed(m1, spds[0])
     setSpeed(m2, spds[1])
     update()
+
+    if random.random() < 0.05:
+      os.system('espeak -a 200 "ham, ham"&')
 
 
 keep_distance(30)
