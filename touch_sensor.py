@@ -7,7 +7,7 @@ right = PORT_2
 enableSensor(left, TYPE_SENSOR_TOUCH)
 enableSensor(right, TYPE_SENSOR_TOUCH)
 
-speed = 250
+speed = 170
 dirmv = 1
 
 while True:

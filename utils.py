@@ -5,6 +5,7 @@
 # We assume we only use two motors PORT_A & PORT_B
 
 from BrickPi import *   #import BrickPi.py file to use BrickPi operations
+import math
 
 m1 = PORT_A
 m2 = PORT_B
@@ -61,6 +62,9 @@ def distMod(enc0, enc1):
 
 def mod(x):
   return x if x > 0 else -x
+
+def dist(x1, y1, x2, y2):
+  return math.sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) )
 
 def most_common(lst):
     return max(set(lst), key=lst.count)

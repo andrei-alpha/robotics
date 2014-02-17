@@ -1,7 +1,7 @@
 from utils import *
 import random, math
 
-speed = 200
+speed = 250
 
 mag = 16
 NOP = 200
@@ -78,24 +78,7 @@ def moveDraw(cm, speed=250):
     update() 
 
 def rotateDraw(deg, speed=250):
-  enableMotor(m1)
-  enableMotor(m2)
-  update()
-
-  speed1 = -speed if deg > 0 else speed
-  speed2 = speed if deg > 0 else -speed
-  cnt = 0
-
-  while cnt / encToDeg < mod(deg):
-    a = enc(m1)
-    b = enc(m2)    
-
-    setSpeed(m1, speed1)
-    setSpeed(m2, speed2)
-    update()
-    
-    stepEnc = (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
-    cnt += stepEnc
+  rotate(deg, speed)
 
   #print 'rotate'
   rad = (deg * math.pi) / 180 * -1 

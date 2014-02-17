@@ -1,0 +1,14 @@
+1. Sonar measure distance
+  22 cm min, 179 cm max
+2. Sonar measure angle
+  40 degrees maximum angular deviation
+3. Sonar depth measurement
+   30 cm - 31
+   40 cm - 41
+   60 cm - 61
+   80 cm - 81
+  On average we see an offset error of 1 cm.
+4. 40 cm: 41, 41, 41, 41, 41, 41, 41, 41, 41, 41
+   100cm: 101, 101, 101, 101, 101, 101, 101, 101, 101, 101
+
+5. When very close only. Jan's fix helped us to remove spikes from the measurements.    
