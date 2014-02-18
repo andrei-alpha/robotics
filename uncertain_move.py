@@ -1,12 +1,6 @@
 from utils import *
 import random, math
 
-speed = 250
-
-mag = 16
-NOP = 200
-particles = [(150, 100, 0)] * NOP
-
 def getRandomDistr():
   return map(lambda x: random.gauss(0, 0.01), range(3))
 
@@ -23,16 +17,14 @@ def updateParticleRotate(particle, A):
   return (x, y, theta + A + g)
 
 # param is Distance for move or Angle for rotate
-def updateParticles(param, isMove):
-  global particles
+def updateParticles(particles, param, isMove):
   if isMove:
-    particles = map(lambda par: updateParticleMove(par, param), particles)
+    _particles = map(lambda par: updateParticleMove(par, param), particles.get())
   else:
-    particles = map(lambda par: updateParticleRotate(par, param), particles) 
+    _particles = map(lambda par: updateParticleRotate(par, param), particles.get())
+  particles.set(_particles) 
 
-def drawParticles():
-  print 'drawParticles:' + str(particles)
-
+'''
 def drawLine(D):
   x1 = reduce(lambda x, y: x + y, map(lambda par: par[0], particles) ) / NOP
   y1 = reduce(lambda x, y: x + y, map(lambda par: par[1], particles) ) / NOP
@@ -41,8 +33,9 @@ def drawLine(D):
   x2 = x1 + D * math.cos(theta)
   y2 = y1 + D * math.sin(theta)
   print 'drawLine:' + str((x1, y1, x2, y2))
+'''
 
-def moveDraw(cm, speed=250):
+def moveSmart(particles, updateFunc, cm, speed=250):
   enableMotor(m1)
   enableMotor(m2)
   update()
@@ -63,8 +56,9 @@ def moveDraw(cm, speed=250):
     cmAcum += stepEnc / encToCm   
 
     if cmAcum > 0.5:
-      updateParticles(cmAcum * mag, True)
-      drawParticles()
+      updateParticles(particles, cmAcum * mag, True)
+      MLCParticles(particles)
+      particles.draw()
       cmAcum = 0
 
     # Read new enocder values
@@ -77,23 +71,34 @@ def moveDraw(cm, speed=250):
     setSpeed(m2, spds[1])
     update() 
 
-def rotateDraw(deg, speed=250):
+def rotateSmart(particles, updateFunc, deg, speed=250):
   rotate(deg, speed)
 
   #print 'rotate'
   rad = (deg * math.pi) / 180 * -1 
   if deg > 0:
-    updateParticles(rad, False)
+    updateParticles(particles, -rad, False)
+    MLCParticles(particles)
   else:
-    updateParticles(rad, False)
-  drawParticles()
+    updateParticles(particles, rad, False)
+    MLCParticles(particles)
+  #particles.draw()
+
+'''
+#Test
+
+speed = 250
+mag =a16
+NOP = 200 
+particles = [(150, 100, 0)] * NOP
 
 dist = 40
-moveDraw(dist, speed)
-rotateDraw(-90)
-moveDraw(dist, speed)
-rotateDraw(-90)
-moveDraw(dist, speed)
-rotateDraw(-90)
-moveDraw(dist, speed)
+moveSmart(particles, dist, speed)
+rotateSmart(particles, -90)
+moveSmart(particles, dist, speed)
+rotateSmart(particles, -90)
+moveSmart(particles, dist, speed)
+rotateSmart(particles, -90)
+moveSmart(particles, dist, speed)
 
+'''

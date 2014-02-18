@@ -1,12 +1,13 @@
 # Andrei Antonescu
 # Initial Date: January 30, 2014
-# Last Updated: January 30, 2014
+# Last Updated: February 18, 2014
 # 
 # We assume we only use two motors PORT_A & PORT_B
 
 from BrickPi import *   #import BrickPi.py file to use BrickPi operations
 import math
 
+eps = 1e-8
 m1 = PORT_A
 m2 = PORT_B
 encToCm = 53.03 # 42
@@ -66,8 +67,45 @@ def mod(x):
 def dist(x1, y1, x2, y2):
   return math.sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) )
 
+# Returns the distance from a point to a wall segment
+def intersect(wall, x, y, theta):
+  a = (wall[3] - wall[1]) * (wall[0] - x) - (wall[2] - wall[0]) * (wall[1] - y)
+  b = (wall[3] - wall[1]) * math.cos(theta) - (wall[2] - wall[0]) * math.sin(theta)
+  m = a / b
+  
+  # If m is less than zero the intersection is behind
+  if m < 0:
+    return 9999999
+  xi = x + m * math.cos(theta)
+  yi = y + m * math.sin(theta)
+
+  # Check if the intersection point lies on the line segment
+  if xi < min(wall[0],wall[2]) - eps or xi > max(wall[0],wall[2]) + eps:
+    return 9999999
+  if yi < min(wall[1],wall[3]) - eps or yi > max(wall[1],wall[3]) + eps:
+    return 9999999
+  return m
+
+# Returns the incidence angle from a point to a wall segment
+def incidence(wall, x, y, theta):
+  a = math.cos(theta) * (wall[1] - wall[3]) + math.sin(theta) * (wall[2] - wall[0])
+  b = math.sqrt( (wall[1] - wall[3]) * (wall[1] - wall[3]) + (wall[2] - wall[0]) * (wall[2] - wall[0]) )
+  return math.acos(a / b)
+'''
+  # Oy parallel wall
+  if wall[0] == wall[2]:
+    if abs(theta) < math.pi / 2.0:
+      return abs(theta)
+    else:
+      return math.pi - abs(theta)
+  # Ox parallel wall
+  if abs(theta) < math.pi / 2.0:
+    return math.pi / 2.0 - abs(theta)
+  return math.pi - abs(theta)
+'''
+
 def most_common(lst):
-    return max(set(lst), key=lst.count)
+  return max(set(lst), key=lst.count)
 
 def median(lst):
   lst.sort()
