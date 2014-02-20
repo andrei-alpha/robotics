@@ -2,8 +2,6 @@ from particleDataStructure import *
 
 import random
 
-#particles = [(1, 1, 0, 30.0), (1, 3, 0, 55.0)]
-
 def set_weight(particle, new_weight):
   part = list(particle)
   part[3] = new_weight
@@ -20,7 +18,7 @@ def normalise(particles):
   return particles
 
 def getRandomArray(particles):
-  return map(lambda x: random.random(), range(10))
+  return map(lambda x: random.random(), range(NOP))
    
 # Returns position of the particle to be copied.
 def search_particle(cumulative_weight, random_num):
@@ -45,4 +43,3 @@ def sampling(particles):
   particles = new_set
   return particles
 
-#print sampling(normalise(particles))

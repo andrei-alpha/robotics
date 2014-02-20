@@ -6,7 +6,7 @@ import time
 import random
 import math
 
-NOP = 100
+NOP = 50
 
 # Functions to generate some dummy particles data:
 def calcX():
@@ -73,7 +73,7 @@ class Map:
 
 # Simple Particles set
 class Particles:
-    def __init__(self, point=(0, 0, 0)):
+    def __init__(self, point=(0, 0, 0, 0)):
         self.n = NOP;    
         self.data = [point] * NOP;
 
@@ -109,7 +109,7 @@ def initMap(mymap):
   mymap.add_wall((168,84,210,84));    # f
   mymap.add_wall((210,84,210,0));     # g
   mymap.add_wall((210,0,0,0));        # h
-
+  mymap.draw()
 """
 particles = Particles();
 t = 0;

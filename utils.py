@@ -71,7 +71,7 @@ def dist(x1, y1, x2, y2):
 def intersect(wall, x, y, theta):
   a = (wall[3] - wall[1]) * (wall[0] - x) - (wall[2] - wall[0]) * (wall[1] - y)
   b = (wall[3] - wall[1]) * math.cos(theta) - (wall[2] - wall[0]) * math.sin(theta)
-  m = a / b
+  m = a / (b if b != 0 else 1e-14)
   
   # If m is less than zero the intersection is behind
   if m < 0:
@@ -79,7 +79,7 @@ def intersect(wall, x, y, theta):
   xi = x + m * math.cos(theta)
   yi = y + m * math.sin(theta)
 
-  # Check if the intersection point lies on the line segment
+  #Check if the intersection point lies on the line segment
   if xi < min(wall[0],wall[2]) - eps or xi > max(wall[0],wall[2]) + eps:
     return 9999999
   if yi < min(wall[1],wall[3]) - eps or yi > max(wall[1],wall[3]) + eps:
