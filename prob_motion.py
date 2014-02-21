@@ -2,7 +2,7 @@ from utils import *
 import random, math
 
 def getRandomDistr():
-  return map(lambda x: random.gauss(0, 0.001), range(3))
+  return map(lambda x: random.gauss(0, 0.01), range(3))
 
 def disperseParticleMove(particle, D):
    [x, y, theta, weight] = particle

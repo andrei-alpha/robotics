@@ -4,7 +4,7 @@ from prob_motion import *
 from normalise_resample import *
 import random, math
 
-speed = 250
+speed = 150
 mymap = Map()
 initMap(mymap)
 K = 0.000014
@@ -26,8 +26,12 @@ def calculate_likelihood((x, y, theta, weight), z):
     
   # If the angle is more than 40 deg discard
   if ang > 40 * math.pi / 180:
-    return 0.1
-
+    return 1.0 / NOP
+    #return 0.1
+  
+  if m < 22:
+    return 1.0 / NOP
+ 
   a = - ((z - m) * (z - m))
   b = 4 # Varience for a gaussian distribution of sonar offsets
   return math.pow(math.e, a / b) + K
@@ -35,7 +39,7 @@ def calculate_likelihood((x, y, theta, weight), z):
 def updateMCL(particles, dispParam, isMove):
   update()
   z = sensor(s3)
-
+  
   # Disperse particles based on standard gaussian deviation 
   disperseParticles(particles, dispParam, isMove)
 
@@ -80,8 +84,12 @@ def navigate((wx, wy), particles):
   distance = dist(x, y, wx, wy)
   
   #print 'navigate', distance
-  
-  moveSmart(particles, updateMCL, distance, speed)
+  if distance > 20: 
+    moveSmart(particles, updateMCL, 20, speed)
+    navigate((wx, wy), particles)
+  else:
+    moveSmart(particles, updateMCL, distance, speed)
+
 
 def path_follow(points, particles):
   for point in points:
