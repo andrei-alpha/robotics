@@ -10,7 +10,7 @@ import math
 eps = 1e-8
 m1 = PORT_A
 m2 = PORT_B
-encToCm = 53.03 # 42
+encToCm = 47 # 53.03 # 42
 encToDeg = 6.88 # 6.05
 difRot = 5.6 # 5.6
 BrickPiSetup()  # setup the serial port for communication
