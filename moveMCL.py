@@ -27,7 +27,7 @@ def calculate_likelihood((x, y, theta, weight), z):
   # If the angle is more than 40 deg discard
   if ang > 40 * math.pi / 180:
     return 1.0 / NOP
-    #return 0.1
+   # return 0.1
   
   if m < 22:
     return 1.0 / NOP
@@ -38,8 +38,8 @@ def calculate_likelihood((x, y, theta, weight), z):
 
 def updateMCL(particles, dispParam, isMove):
   update()
-  z = sensor(s3)+5
-  print "Sensor ",z 
+  z = sensor(s3)#+5
+  #print "Sensor ",z 
  
   # Disperse particles based on standard gaussian deviation 
   disperseParticles(particles, dispParam, isMove)
@@ -85,9 +85,9 @@ def navigate((wx, wy), particles):
   distance = dist(x, y, wx, wy)
   
   #print 'navigate', distance
- # if distance > 20: 
-  # moveSmart(particles, updateMCL, 20, speed)
- # navigate((wx, wy), particles)
+  #if distance > 20: 
+   #moveSmart(particles, updateMCL, 20, speed)
+   #navigate((wx, wy), particles)
   #else:
   moveSmart(particles, updateMCL, distance, speed)
 
