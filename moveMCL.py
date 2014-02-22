@@ -105,6 +105,6 @@ points = [(84, 30),
   (84, 54),
   (84, 30)]
 
-particles = Particles((84, 30, 0, 1.0))
+particles = Particles((84, 30, 0, 1.0 / NOP))
 path_follow(points, particles)
 
