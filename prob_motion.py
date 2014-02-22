@@ -1,4 +1,5 @@
 from utils import *
+from particleDataStructure import *
 import random, math
 
 def getRandomDistr():
@@ -38,6 +39,12 @@ def moveSmart(particles, updateFunc, cm, speed=250):
 
   #print 'move', cm
 
+  #prev_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
+  #prev_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
+  
+  #new_x = prev_x
+  #new_y = prev_y
+#  while (dist(prev_x, prev_y, new_x, new_y) < cm and (cnt / encToCm) < cm):
   while cnt / encToCm < cm:
     # Update movment
     stepEnc = (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
@@ -45,7 +52,11 @@ def moveSmart(particles, updateFunc, cm, speed=250):
     cmAcum += stepEnc / encToCm   
 
     if cmAcum > 0.5:
+     # prev_x = new_x
+     # prev_y = new_y
       updateFunc(particles, cmAcum, True)
+     # new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
+     # new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
       particles.draw()
       cmAcum = 0
 
