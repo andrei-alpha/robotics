@@ -52,8 +52,8 @@ def moveSmart(particles, updateFunc, cm, speed=250):
     cmAcum += stepEnc / encToCm   
 
     if cmAcum > 0.5:
-      prev_x = new_x
-      prev_y = new_y
+      #prev_x = new_x
+      #prev_y = new_y
       updateFunc(particles, cmAcum, True)
       new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
       new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP

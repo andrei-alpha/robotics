@@ -6,7 +6,7 @@ import time
 import random
 import math
 
-NOP = 50
+NOP = 100
 
 # Functions to generate some dummy particles data:
 def calcX():
