@@ -29,7 +29,7 @@ def calculate_likelihood((x, y, theta, weight), z):
     return 1.0 / NOP
     #return 0.1
   
-  if m < 22:
+  if m < 22 or m > 120:
     return 1.0 / NOP
  
   a = - ((z - m) * (z - m))
