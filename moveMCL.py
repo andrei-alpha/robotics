@@ -38,10 +38,10 @@ def calculate_likelihood((x, y, theta, weight), z):
 
 def updateMCL(particles, dispParam, isMove):
   update()
-  z = sensor(s3)
+  z = sensor(s3) + 5
   
   # Disperse particles based on standard gaussian deviation 
-  disperseParticles(particles, dispParam, isMove)
+  #disperseParticles(particles, dispParam, isMove)
 
   #print '#1', particles.get()[0]
 
@@ -86,10 +86,11 @@ def navigate((wx, wy), particles):
   #print 'navigate', distance
   if distance > 20: 
     moveSmart(particles, updateMCL, 20, speed)
+    updateMCL(particles, 20, True)
     navigate((wx, wy), particles)
   else:
     moveSmart(particles, updateMCL, distance, speed)
-
+    updateMCL(particles, distance, True)
 
 def path_follow(points, particles):
   for point in points:
@@ -98,12 +99,12 @@ def path_follow(points, particles):
 points = [(84, 30),
   (180, 30),
   (180, 54),
-  (126, 54),
-  (126, 168),
-  (126, 126),
-  (30, 54),
-  (84, 54),
-  (84, 30)]
+  (126, 54)]
+#  (126, 168),
+#  (126, 126),
+#  (30, 54),
+#  (84, 54),
+#  (84, 30)]
 
 particles = Particles((84, 30, 0, 1.0 / NOP))
 path_follow(points, particles)

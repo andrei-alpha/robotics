@@ -54,7 +54,8 @@ def moveSmart(particles, updateFunc, cm, speed=250):
     if cmAcum > 0.5:
       #prev_x = new_x
       #prev_y = new_y
-      updateFunc(particles, cmAcum, True)
+     # updateFunc(particles, cmAcum, True)
+      disperseParticles(particles, cmAcum, True)
       new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
       new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
       particles.draw()
@@ -76,6 +77,7 @@ def rotateSmart(particles, updateFunc, deg, speed=250):
   print 'rotate', deg
   
   rad = (deg * math.pi) / 180
-  updateFunc(particles, rad, False)
+  #updateFunc(particles, rad, False)
+  disperseParticles(particles, rad, False)
   particles.draw()
 
