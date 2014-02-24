@@ -37,6 +37,7 @@ def calculate_likelihood((x, y, theta, weight), z):
   return math.pow(math.e, a / b) + K
 
 def updateMCL(particles, dispParam, isMove):
+  time.sleep(0.001)
   update()
   z = sensor(s3) + 5
   
@@ -84,9 +85,10 @@ def navigate((wx, wy), particles):
   distance = dist(x, y, wx, wy)
   
   #print 'navigate', distance
-  if distance > 20: 
-    moveSmart(particles, updateMCL, 20, speed)
-    updateMCL(particles, 20, True)
+  dist_move = 20
+  if distance > dist_move: 
+    moveSmart(particles, updateMCL, dist_move, speed)
+    updateMCL(particles, dist_move, True)
     navigate((wx, wy), particles)
   else:
     moveSmart(particles, updateMCL, distance, speed)
@@ -99,12 +101,12 @@ def path_follow(points, particles):
 points = [(84, 30),
   (180, 30),
   (180, 54),
-  (126, 54)]
-#  (126, 168),
-#  (126, 126),
-#  (30, 54),
-#  (84, 54),
-#  (84, 30)]
+  (126, 54),
+  (126, 168),
+  (126, 126),
+  (30, 54),
+  (84, 54),
+  (84, 30)]
 
 particles = Particles((84, 30, 0, 1.0 / NOP))
 path_follow(points, particles)
