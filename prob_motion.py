@@ -38,25 +38,25 @@ def moveSmart(particles, updateFunc, cm, speed=250):
   cnt = 0
 
   #print 'move', cm
-
-  #prev_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
-  #prev_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
+  prev_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
+  prev_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
   
-  #new_x = prev_x
-  #new_y = prev_y
-#  while (dist(prev_x, prev_y, new_x, new_y) < cm and (cnt / encToCm) < cm):
-  while cnt / encToCm < cm:
+  new_x = prev_x
+  new_y = prev_y
+  while (dist(prev_x, prev_y, new_x, new_y) < cm and (cnt / encToCm) < cm):
+ # while cnt / encToCm < cm:
     # Update movment
     stepEnc = (mod(a - enc(m1)) +  mod(b - enc(m2))) / 2.0
     cnt += stepEnc
     cmAcum += stepEnc / encToCm   
 
     if cmAcum > 0.5:
-     # prev_x = new_x
-     # prev_y = new_y
-      updateFunc(particles, cmAcum, True)
-     # new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
-     # new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
+      #prev_x = new_x
+      #prev_y = new_y
+     # updateFunc(particles, cmAcum, True)
+      disperseParticles(particles, cmAcum, True)
+      new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
+      new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
       particles.draw()
       cmAcum = 0
 
@@ -76,6 +76,7 @@ def rotateSmart(particles, updateFunc, deg, speed=250):
   print 'rotate', deg
   
   rad = (deg * math.pi) / 180
-  updateFunc(particles, rad, False)
+  #updateFunc(particles, rad, False)
+  disperseParticles(particles, rad, False)
   particles.draw()
 
