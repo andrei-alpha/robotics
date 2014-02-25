@@ -27,7 +27,6 @@ def calculate_likelihood((x, y, theta, weight), z):
   # If the angle is more than 40 deg discard
   if ang > 40 * math.pi / 180:
     return 1.0 / NOP
-    #return 0.1
   
   if m < 22 or m > 120:
     return 1.0 / NOP
