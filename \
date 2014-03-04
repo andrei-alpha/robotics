@@ -12,7 +12,7 @@ s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 magDrawLine = 2
 sonar_speed = 250
-ERROR = 40000
+ERROR = 100
 
 # Location signature class: stores a signature characterizing one location
 class LocationSignature:
@@ -84,7 +84,6 @@ class SignatureContainer():
         else:
             print "WARNING: Signature does not exist."
             ls.sig = [999] * 360
-            ls.freq = [0] * 360
         
         return ls
         
@@ -92,36 +91,35 @@ class SignatureContainer():
 def characterize_location(ls):
   enableMotor(m3)
   setSpeed(m3, 0)
-  update()  
-
+  
   c = enc(m3)
   cnt = 0.0
   cntAcum = 0
   ind = 0
 
   while cnt / encToDegSonar < 360:
-    setSpeed(m3, sonar_speed)
-    update()
-
-    cnt += mod(c - enc(m3)) * 1.0
-    cntAcum += mod(c - enc(m3)) * 1.0
-    c = enc(m3)
+      setSpeed(m3, 250)
+      update()
       
-    if cntAcum / encToDegSonar >= 1.0:
-      cntAcum = 0
-      ls.sig[ind] = sensor(s3)
-      ls.freq[ sensor(s3) ] += 1
-      ind = ind + 1
-    """
-    x1 = 500 + ls.sig[i]*math.cos(i * rad) * magDrawLine
-    y1 = 300 + ls.sig[i]*math.sin(i * rad) * magDrawLine
-    #print "x1", x1
-    #print "y1", y1
-    x1 = max(x1, 0)
-    y1 = max(y1, 0)
-    line = (500, 300, int(x1), int(y1))
-    print "drawLine:" + str(line)
-    """
+      print c
+      cnt += mod(c - enc(m3)) * 1.0
+      cntAcum += mod(c - enc(m3)) * 1.0
+      c = enc(m3)
+      
+      if cntAcum / encToDegSonar >= 1.0:
+        cntAcum = 0
+        ls.sig[ind] = sensor(s3)
+        ind = ind + 1
+      """
+      x1 = 500 + ls.sig[i]*math.cos(i * rad) * magDrawLine
+      y1 = 300 + ls.sig[i]*math.sin(i * rad) * magDrawLine
+      #print "x1", x1
+      #print "y1", y1
+      x1 = max(x1, 0)
+      y1 = max(y1, 0)
+      line = (500, 300, int(x1), int(y1))
+      print "drawLine:" + str(line)
+      """
   setSpeed(m3, 0)
   update()
   rotate_sonar(360, -sonar_speed)
@@ -130,16 +128,11 @@ def characterize_location(ls):
 def compare_signatures(ls1, ls2):
     dist = 999999999
     
-    
     for i in range(360):
       sum = 0
       for j in range(360):
         sum += pow(ls1.sig[j] - ls2.sig[(i + j) % 360], 2)  
       dist = min(dist, sum)
-    '''
-    for i in range(256):
-      dist = pow(ls1.feq[
-    '''
     return dist
 
 # This function characterizes the current location, and stores the obtained 
@@ -169,8 +162,8 @@ def recognize_location():
     ls_obs = LocationSignature();
     characterize_location(ls_obs);
 
-    #print 'Learned'
-    #print ls_obs.sig
+    print 'Learned'
+    print ls_obs.sig
 
     loc = [9999999, -1]
     # FILL IN: COMPARE ls_read with ls_obs and find the best match
@@ -183,7 +176,7 @@ def recognize_location():
           loc = [dist, idx]
 
     if loc[0] < ERROR:
-      print 'We are in location %d' % (loc[1])
+      print 'We are be in location %d' % (loc[1])
     else:
       print 'No good match'        
 

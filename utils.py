@@ -13,7 +13,7 @@ m2 = PORT_B
 m3 = PORT_C
 encToCm = 42 #47 # 53.03 # 42
 encToDeg = 6.88 # 6.05
-encToDegSonar = 10.40  # 1.12  #1.95 
+encToDegSonar = 10.20  # 1.12 
 difRot = 5.6 # 5.6
 BrickPiSetup()  # setup the serial port for communication
 BrickPiSetupSensors()   #Send the properties of sensors to BrickPi
@@ -213,13 +213,14 @@ def rotate(deg, speed):
 def rotate_sonar(deg, speed = 250):
   enableMotor(m3)
   setSpeed(m3, 0)
-  speed = -speed if deg > 0 else speed 
+  speed = -speed if deg < 0 else speed 
   update()
   
   c = enc(m3)
   cnt = 0
   
   while cnt / encToDegSonar < deg:
+    #print 'iter', cnt / encToDegSonar, deg
     setSpeed(m3, speed)
     update()
     cnt += mod(c - enc(m3)) * 1.0
