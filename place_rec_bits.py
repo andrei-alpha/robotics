@@ -3,12 +3,16 @@
 # Based on original C code by Adrien Angeli, 2009
 
 from utils import *
+from particleDataStructure import *
 import random
+import math
 import os
 
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
-sonar_speed = 80
+magDrawLine = 2
+sonar_speed = 250
+ERROR = 100
 
 # Location signature class: stores a signature characterizing one location
 class LocationSignature:
@@ -84,16 +88,33 @@ class SignatureContainer():
         
 # FILL IN: spin robot or sonar to capture a signature and store it in ls
 def characterize_location(ls):
-    for i in range(len(ls.sig)):
+  for i in range(len(ls.sig)):
       update()
+      deg = 1
+      rad = 1 * math.pi / 180
+
       ls.sig[i] = sensor(s3)
-      drawLine(10)
-      rotate_sonar(1, sonar_speed)
- 
+      """
+      x1 = 500 + ls.sig[i]*math.cos(i * rad) * magDrawLine
+      y1 = 300 + ls.sig[i]*math.sin(i * rad) * magDrawLine
+      #print "x1", x1
+      #print "y1", y1
+      x1 = max(x1, 0)
+      y1 = max(y1, 0)
+      line = (500, 300, int(x1), int(y1))
+      print "drawLine:" + str(line)
+      """
+      rotate_sonar(deg, sonar_speed)
+
 # FILL IN: compare two signatures
 def compare_signatures(ls1, ls2):
     dist = 0
-    print "TODO:    You should implement the function that compares two signatures."
+    
+    for i in range(360):
+      sum = 0
+      for j in range(360):
+        sum += pow(ls1[j] - ls2[(i + j) % 360], 2)  
+      dist = min(dist, sum)
     return dist
 
 # This function characterizes the current location, and stores the obtained 
@@ -123,11 +144,19 @@ def recognize_location():
     ls_obs = LocationSignature();
     characterize_location(ls_obs);
 
+    loc = [9999999, -1]
     # FILL IN: COMPARE ls_read with ls_obs and find the best match
     for idx in range(signatures.size):
         print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
         ls_read = signatures.read(idx);
         dist    = compare_signatures(ls_obs, ls_read)
+        if dist < loc[0]:
+          loc = [dist, idx]
+
+    if loc[0] < ERROR:
+      print 'We are be in location %d' % (loc[1])
+    else:
+      print 'No good match'        
 
 # Prior to starting learning the locations, it should delete files from previous
 # learning either manually or by calling signatures.delete_loc_files(). 
@@ -137,7 +166,7 @@ def recognize_location():
 signatures = SignatureContainer(5);
 #signatures.delete_loc_files()
 
-learn_location();
+#learn_location();
 #recognize_location();
 
 

@@ -1,5 +1,5 @@
 from utils import *
-speed = 250
+speed = 170
 dist = 40
 
 move(dist, speed)
