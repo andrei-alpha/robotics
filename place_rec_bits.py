@@ -18,6 +18,7 @@ ERROR = 40000
 class LocationSignature:
     def __init__(self, no_bins = 360):
         self.sig = [0] * no_bins
+        self.freq = [0] * 256
         
     def print_signature(self):
         for i in range(len(self.sig)):
@@ -80,11 +81,12 @@ class SignatureContainer():
                 s = f.readline()
                 if (s != ''):
                     ls.sig[i] = int(s)
+                    ls.freq[ int(s) ] += 1
             f.close();
         else:
             print "WARNING: Signature does not exist."
             ls.sig = [999] * 360
-            ls.freq = [0] * 360
+            ls.freq = [50] * 256
         
         return ls
         
@@ -108,9 +110,11 @@ def characterize_location(ls):
     c = enc(m3)
       
     if cntAcum / encToDegSonar >= 1.0:
-      cntAcum = 0
+      cntAcum -= encToDegSonar
       ls.sig[ind] = sensor(s3)
       ls.freq[ sensor(s3) ] += 1
+      #print ls.sig[ind]
+      #time.sleep(.5)
       ind = ind + 1
     """
     x1 = 500 + ls.sig[i]*math.cos(i * rad) * magDrawLine
@@ -126,21 +130,36 @@ def characterize_location(ls):
   update()
   rotate_sonar(360, -sonar_speed)
 
-# FILL IN: compare two signatures
+# This function compare two signatures
 def compare_signatures(ls1, ls2):
     dist = 999999999
     
-    
+    '''
     for i in range(360):
       sum = 0
       for j in range(360):
         sum += pow(ls1.sig[j] - ls2.sig[(i + j) % 360], 2)  
       dist = min(dist, sum)
     '''
-    for i in range(256):
-      dist = pow(ls1.feq[
-    '''
+    sum1 = sum(ls1.freq[i] * i for i in xrange(256))
+    sum2 = sum(ls2.freq[i] * i for i in xrange(256))
+       
+    #return mod(sum1 - sum2)
     return dist
+
+# This function gets the angle of best match of two signatures
+def angle_signatures(ls1, ls2):
+  dist = 99999999
+  angle = 0
+
+  for i in range(360):
+    sumx = 0
+    for j in range(360):
+      sumx += pow(ls1.sig[j] - ls2.sig[(i + j) % 360], 2)   
+    if sumx < dist:
+      angle = i
+      dist = sumx
+  return angle
 
 # This function characterizes the current location, and stores the obtained 
 # signature into the next available file.
@@ -172,7 +191,7 @@ def recognize_location():
     #print 'Learned'
     #print ls_obs.sig
 
-    loc = [9999999, -1]
+    loc = [9999999, 0]
     # FILL IN: COMPARE ls_read with ls_obs and find the best match
     for idx in range(signatures.size):
         print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
@@ -182,8 +201,10 @@ def recognize_location():
         if dist < loc[0]:
           loc = [dist, idx]
 
+    ls_read = signatures.read(loc[1])
     if loc[0] < ERROR:
-      print 'We are in location %d' % (loc[1])
+      angle = angle_signatures(ls_obs, ls_read)
+      print 'We are in location %d with angle %d' % (loc[1], angle)
     else:
       print 'No good match'        
 
