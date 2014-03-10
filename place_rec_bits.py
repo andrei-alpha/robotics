@@ -144,14 +144,7 @@ def compare_signatures(ls1, ls2):
     for i in range(360):
       sum = 0
       for j in range(360):
-        a = ls1.sig[j]
-        b = ls2.sig[(i + j) % 360]
-        if a > 170 or b > 170:
-          continue
-        #  a = 0
-        #if b > 170:
-        #  b = 0
-        sum += pow(a - b, 2)  
+        sum += pow(ls1.sig[j] - ls2.sig[(j + i) % 360], 2)  
       dist = min(dist, sum)
     '''
     sum = 0
@@ -172,11 +165,7 @@ def angle_signatures(ls1, ls2):
   for i in range(360):
     sumx = 0
     for j in range(360):
-       a = ls1.sig[j]
-       b = ls2.sig[(i + j) % 360]
-       if a > 170 or b > 170:
-         continue
-       sumx += pow(a - b, 2)   
+       sumx += pow(ls1.sig[j] - ls2.sig[(j + i) % 360], 2)   
     if sumx < dist:
       angle = i
       dist = sumx

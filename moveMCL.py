@@ -12,18 +12,50 @@ K = 0.000014
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 
-# Returns how likely the x,y corresponds with sonar reading
-def calculate_likelihood((x, y, theta, weight), z):
-  m = 9999999
-  ang = 0
+# Rotates toward the closest wall
+def rotate_closest_wall(particles):
+  x = sum( map(lambda par: par[0], particles.get()) ) / NOP
+  y = sum( map(lambda par: par[1], particles.get()) ) / NOP
+  theta = sum( map(lambda par: par[2], particles.get()) ) / NOP
 
-  # Try to intersect with each wall and take closest one
+  thetaOffset = 0.0
+  isOk = False
+
+  for offset in list([0.0, toRad(45), toRad(-45), toRad(90), toRad(-90)]):
+    [m, ang] = wall_intersect(x, y, theta + offset)
+    
+    if ang < toRad(-40) or ang > toRad(40) or m < 22 or m > 120:
+      continue
+    thetaOffset = offset
+    isOk = True
+    break
+
+  print ' [rotate_closest_wall]', thetaOffset
+  rotate_sonar(toDeg(thetaOffset), speed)
+  disperseParticles(particles, thetaOffset, False)
+  return thetaOffset
+
+def rotate_back(particles, thetaOffset):
+  rotate_sonar(toDeg(-thetaOffset), speed)
+  disperseParticles(particles, -thetaOffset, False)
+
+# Try to intersect with each wall and take closest one
+def wall_intersect(x, y, theta):
+  m = 9999999
+  ang = 0  
+
   for wall in mymap.get_walls():
     _m = intersect(wall, x, y, theta)
     if (_m < m):
       m = _m
       ang = incidence(wall, x, y, theta)
-    
+  return [m, ang]
+
+# Returns how likely the x,y corresponds with sonar reading
+def calculate_likelihood((x, y, theta, weight), z):
+  [m, ang] = wall_intersect(x, y, theta)
+   
+  #print ang, m 
   # If the angle is more than 40 deg discard
   if ang > 40 * math.pi / 180:
     return 1.0 / NOP
@@ -43,14 +75,20 @@ def updateMCL(particles, dispParam, isMove):
   # Disperse particles based on standard gaussian deviation 
   disperseParticles(particles, dispParam, isMove)
 
-  #print '#1', particles.get()[0]
+  #print '#1', particles.get()
 
   # Compute likelihood
+  theta = rotate_closest_wall(particles)
   weights = map(lambda par: calculate_likelihood(par, z), particles.get())
+  rotate_back(particles, theta)
+  
+  #rotate_sonar( toDeg(-theta), speed)
+  #disperseParticles(particles, -theta, False)
+
   _particles = map(lambda tp: tp[0][:-1] + (tp[1],), zip(particles.get(), weights))
   # Normalise and resample
 
-  #print '#2', _particles[0]
+  #print '#2', _particles
   
   _particles = normalise(_particles)
   _particles = sampling(_particles)

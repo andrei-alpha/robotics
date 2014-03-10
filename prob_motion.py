@@ -15,7 +15,6 @@ def disperseParticleRotate(particle, A):
   [x, y, theta, weight] = particle
   [e, f, g] = getRandomDistr()
   #theta = theta if theta >= -math.pi else theta + 2 * math.pi
-
   return (x, y, theta + A + g, weight)
 
 # param is Distance for move or Angle for rotate
