@@ -40,6 +40,12 @@ def enc(m):
 def sensor(s):
   return BrickPi.Sensor[s]
 
+def toRad(deg):
+  return deg / 180 * math.pi
+
+def toDeg(rad):
+  return rad * 180 / math.pi
+
 def calibrate(sa, sb, dif, step=5):
   dif = int(dif)
   ga = 1 if sa > 0 else -1

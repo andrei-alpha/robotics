@@ -11,8 +11,9 @@ import os
 s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 magDrawLine = 2
-sonar_speed = 250
-ERROR = 40000
+sonar_speed = 170
+rotate_speed = 80 
+ERROR = 1000000
 
 # Location signature class: stores a signature characterizing one location
 class LocationSignature:
@@ -102,15 +103,19 @@ def characterize_location(ls):
   ind = 0
 
   while cnt / encToDegSonar < 360:
-    setSpeed(m3, sonar_speed)
+    setSpeed(m3, rotate_speed)
     update()
+    setSpeed(m3, 0)
 
     cnt += mod(c - enc(m3)) * 1.0
     cntAcum += mod(c - enc(m3)) * 1.0
     c = enc(m3)
-      
+    #print 'total', cnt / encToDegSonar, 'acum', cntAcum / encToDegSonar  
+
     if cntAcum / encToDegSonar >= 1.0:
       cntAcum -= encToDegSonar
+      update()
+      reading = sensor(s3)
       ls.sig[ind] = sensor(s3)
       ls.freq[ sensor(s3) ] += 1
       #print ls.sig[ind]
@@ -126,25 +131,37 @@ def characterize_location(ls):
     line = (500, 300, int(x1), int(y1))
     print "drawLine:" + str(line)
     """
+  #print ls.sig
+
   setSpeed(m3, 0)
   update()
-  rotate_sonar(360, -sonar_speed)
+  #rotate_sonar(360, -sonar_speed)
 
 # This function compare two signatures
 def compare_signatures(ls1, ls2):
     dist = 999999999
     
-    '''
     for i in range(360):
       sum = 0
       for j in range(360):
-        sum += pow(ls1.sig[j] - ls2.sig[(i + j) % 360], 2)  
+        a = ls1.sig[j]
+        b = ls2.sig[(i + j) % 360]
+        if a > 170 or b > 170:
+          continue
+        #  a = 0
+        #if b > 170:
+        #  b = 0
+        sum += pow(a - b, 2)  
       dist = min(dist, sum)
     '''
-    sum1 = sum(ls1.freq[i] * i for i in xrange(256))
-    sum2 = sum(ls2.freq[i] * i for i in xrange(256))
-       
-    #return mod(sum1 - sum2)
+    sum = 0
+    for i in range(170):
+      sum += pow(ls1.freq[i] - ls2.freq[i], 2)
+    dist = min(dist, sum)
+    '''
+    #sum1 = sum(ls1.freq[i] * i for i in xrange(256))
+    #sum2 = sum(ls2.freq[i] * i for i in xrange(256))
+          
     return dist
 
 # This function gets the angle of best match of two signatures
@@ -155,7 +172,11 @@ def angle_signatures(ls1, ls2):
   for i in range(360):
     sumx = 0
     for j in range(360):
-      sumx += pow(ls1.sig[j] - ls2.sig[(i + j) % 360], 2)   
+       a = ls1.sig[j]
+       b = ls2.sig[(i + j) % 360]
+       if a > 170 or b > 170:
+         continue
+       sumx += pow(a - b, 2)   
     if sumx < dist:
       angle = i
       dist = sumx
@@ -188,8 +209,8 @@ def recognize_location():
     ls_obs = LocationSignature();
     characterize_location(ls_obs);
 
-    #print 'Learned'
-    #print ls_obs.sig
+    print 'Observed'
+    print ls_obs.sig
 
     loc = [9999999, 0]
     # FILL IN: COMPARE ls_read with ls_obs and find the best match
@@ -205,8 +226,10 @@ def recognize_location():
     if loc[0] < ERROR:
       angle = angle_signatures(ls_obs, ls_read)
       print 'We are in location %d with angle %d' % (loc[1], angle)
+      return [loc[1], angle]
     else:
-      print 'No good match'        
+      print 'No good match'
+      return [-1, -1]       
 
 # Prior to starting learning the locations, it should delete files from previous
 # learning either manually or by calling signatures.delete_loc_files(). 

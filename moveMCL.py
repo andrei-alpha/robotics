@@ -41,7 +41,7 @@ def updateMCL(particles, dispParam, isMove):
   z = sensor(s3) + 5
   
   # Disperse particles based on standard gaussian deviation 
-  #disperseParticles(particles, dispParam, isMove)
+  disperseParticles(particles, dispParam, isMove)
 
   #print '#1', particles.get()[0]
 
@@ -58,37 +58,34 @@ def updateMCL(particles, dispParam, isMove):
 
   #print '#3', _particles[0]
 
-def navigate((wx, wy), particles):
+def navigate((wx, wy), particles, speed = 150):
   x = sum( map(lambda par: par[0], particles.get()) ) / NOP
   y = sum( map(lambda par: par[1], particles.get()) ) / NOP
   theta = sum( map(lambda par: par[2], particles.get()) ) / NOP  
 
-  #print 'I am at:', x, y, theta, ' >>> ', wx, wy 
+  print ' [navigate] I am at:', x, y, theta, ' >>> ', wx, wy 
 
   [dx, dy] = [wx - x, wy - y]
   alpha = math.atan2(dy, dx)
   beta = alpha - theta
 
-  #print 'rad=', beta
+  #print ' [beta.navigate] rad=', beta
 
   # Convert from radians to deg
-  deg = int(beta / math.pi * 180)
+  deg = toDeg(beta)
   if deg < -180:
     deg += 360
   elif deg > 180:
-    deg -= 360
-  
-  #print 'deg=', deg
-
+    deg -= 360 
+ 
   rotateSmart(particles, updateMCL, deg, speed)
   distance = dist(x, y, wx, wy)
   
-  #print 'navigate', distance
   dist_move = 20
   if distance > dist_move: 
     moveSmart(particles, updateMCL, dist_move, speed)
     updateMCL(particles, dist_move, True)
-    navigate((wx, wy), particles)
+    navigate((wx, wy), particles, speed)
   else:
     moveSmart(particles, updateMCL, distance, speed)
     updateMCL(particles, distance, True)
@@ -96,17 +93,4 @@ def navigate((wx, wy), particles):
 def path_follow(points, particles):
   for point in points:
     navigate(point, particles)
-
-points = [(84, 30),
-  (180, 30),
-  (180, 54),
-  (126, 54),
-  (126, 168),
-  (126, 126),
-  (30, 54),
-  (84, 54),
-  (84, 30)]
-
-particles = Particles((84, 30, 0, 1.0 / NOP))
-path_follow(points, particles)
 

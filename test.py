@@ -1,26 +1,18 @@
 from place_rec_bits import *
 import os, sys
-'''
+
 os.system('rm loc_*.dat')
 
-print 'Enter a key to learn location 0 ...'
-sys.stdin.read(1)
-learn_location()
+for i in range(5):
+  print 'Enter a key to learn location', i, '...'
+  sys.stdin.read(1)
+  learn_location()
 
-print 'Enter a key to learn location 1 ...'
-sys.stdin.read(1)
-learn_location()
-
-print 'Enter a key to learn location 2 ...'
-sys.stdin.read(1)
-learn_location()
 '''
 print 'Put in a previous learnt location ...'
 sys.stdin.read(1)
 recognize_location()
 
-
-'''
 OneDeg = 0.33
 
 error = 0

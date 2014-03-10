@@ -8,13 +8,13 @@ def getRandomDistr():
 def disperseParticleMove(particle, D):
    [x, y, theta, weight] = particle
    [e, f, g] = getRandomDistr()
-   theta = theta if theta >= -math.pi else theta + 2 * math.pi
+   #theta = theta if theta >= -math.pi else theta + 2 * math.pi
    return (x + (e + D) * math.cos(theta), y + (e + D) * math.sin(theta), theta + f, weight)
 
 def disperseParticleRotate(particle, A):
   [x, y, theta, weight] = particle
   [e, f, g] = getRandomDistr()
-  theta = theta if theta >= -math.pi else theta + 2 * math.pi
+  #theta = theta if theta >= -math.pi else theta + 2 * math.pi
 
   return (x, y, theta + A + g, weight)
 
@@ -37,7 +37,7 @@ def moveSmart(particles, updateFunc, cm, speed=250):
   cmAcum = 0
   cnt = 0
 
-  #print 'move', cm
+  print ' [moveSmart] Move', cm
   prev_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
   prev_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
   
@@ -53,11 +53,11 @@ def moveSmart(particles, updateFunc, cm, speed=250):
     if cmAcum > 0.5:
       #prev_x = new_x
       #prev_y = new_y
-     # updateFunc(particles, cmAcum, True)
-      disperseParticles(particles, cmAcum, True)
+      #updateFunc(particles, cmAcum, True)
+      #disperseParticles(particles, cmAcum, True)
       new_x = sum( map(lambda par: par[0], particles.get()) ) / NOP
       new_y = sum( map(lambda par: par[1], particles.get()) ) / NOP
-      particles.draw()
+      #particles.draw()
       cmAcum = 0
 
     # Read new enocder values
@@ -73,10 +73,10 @@ def moveSmart(particles, updateFunc, cm, speed=250):
 def rotateSmart(particles, updateFunc, deg, speed=250):
   rotate(deg, speed)
 
-  print 'rotate', deg
+  print ' [rotateSmart] Rotate', deg
   
-  rad = (deg * math.pi) / 180
-  #updateFunc(particles, rad, False)
-  disperseParticles(particles, rad, False)
-  particles.draw()
+  rad = toRad(deg)
+  updateFunc(particles, rad, False)
+  #disperseParticles(particles, rad, False)
+  #particles.draw()
 
