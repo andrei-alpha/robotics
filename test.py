@@ -1,9 +1,9 @@
 from place_rec_bits import *
 import os, sys
 
-os.system('rm loc_*.dat')
+os.system('rm loc_00.dat')
 
-for i in range(5):
+for i in range(1):
   print 'Enter a key to learn location', i, '...'
   sys.stdin.read(1)
   learn_location()

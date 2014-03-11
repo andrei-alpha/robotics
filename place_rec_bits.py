@@ -12,7 +12,7 @@ s3 = PORT_3
 enableSensor(s3, TYPE_SENSOR_ULTRASONIC_CONT)
 magDrawLine = 2
 sonar_speed = 170
-rotate_speed = 80 
+rotate_speed = 90 
 ERROR = 1000000
 
 # Location signature class: stores a signature characterizing one location
@@ -214,6 +214,7 @@ def recognize_location():
     ls_read = signatures.read(loc[1])
     if loc[0] < ERROR:
       angle = angle_signatures(ls_obs, ls_read)
+      angle = 360 - angle
       print 'We are in location %d with angle %d' % (loc[1], angle)
       return [loc[1], angle]
     else:

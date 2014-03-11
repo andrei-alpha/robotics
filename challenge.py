@@ -48,6 +48,7 @@ theta = ret[1] * math.pi / 180
 init_loc = list(location)
 particles = Particles((init_loc[0], init_loc[1], theta, 1.0 / NOP))
 
+flush()
 for i in range(5):
   navigate(points[init_ind + i + 1], particles, speed)
   flush()
